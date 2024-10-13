@@ -1,0 +1,40 @@
+name: Build iOS Project
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install CMake
+      run: |
+        brew install cmake
+
+    - name: Create xcarchive
+      run: |
+        UUID=$(uuidgen)  # Generate a UUID
+        ARCHIVE_DIR="built/build_${UUID}.xcarchive"  # Set the archive directory path
+        mkdir -p "$(dirname "$ARCHIVE_DIR")"  # Create the parent directory for the archive
+        xcodebuild -project Unity-iPhone.xcodeproj -scheme Unity-iPhone -archivePath "$ARCHIVE_DIR" archive  # Adjust scheme if necessary
+
+    - name: Export IPA
+      id: export_ipa  # Set an ID to reference this step
+      run: |
+        OUTPUT_DIR="output"
+        mkdir -p "$OUTPUT_DIR"  # Create the output directory
+        xcodebuild -exportArchive -archivePath "$ARCHIVE_DIR" -exportPath "$OUTPUT_DIR" -exportOptionsPlist exportOptions.plist  # Adjust paths accordingly
+        
+        # Grab the IPA path into a variable
+        IPA_PATH=$(find "$OUTPUT_DIR" -name "*.ipa")  # Find the IPA file
+        echo "IPA_PATH=$IPA_PATH" >> $GITHUB_ENV  # Set the path to the environment variable
+
+    - name: Upload IPA Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: YourProject.ipa
+        path: ${{ env.IPA_PATH }}  # Use the path variable from the previous step
