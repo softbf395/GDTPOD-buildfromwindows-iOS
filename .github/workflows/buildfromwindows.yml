@@ -1,7 +1,8 @@
 name: Build Unity Project for iOS
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   build:
