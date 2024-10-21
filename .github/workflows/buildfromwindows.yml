@@ -8,23 +8,45 @@ jobs:
   build:
     runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
       - name: Install Unity
         uses: actions/setup-unity@v1
         with:
-          unity-version: 2022.3.47f1
+          unity-version: '2022.3.47f1'  # Use the desired Unity version
+          activate: true                 # Activate Unity license
+
       - name: Build Unity Project for iOS
         run: |
           cd UnityProject
-          ./Unity -batchmode -quit -projectPath . -executeMethod Build -buildTarget iOS -buildName MyUnityProject
+          /Applications/Unity/Hub/Editor/2022.3.47f1/Unity.app/Contents/MacOS/Unity \
+            -batchmode -quit -projectPath . \
+            -executeMethod BuildScript.PerformBuild  # Ensure your build method matches this
+
       - name: Build Xcode Project
         run: |
-          xcodebuild -project xcprojects/Unity-iOS.xcodeproj -scheme MyUnityProject -configuration Release -sdk iphoneos -archivePath MyUnityProject.xcarchive
+          cd xcprojects
+          xcodebuild -project Unity-iOS.xcodeproj \
+                     -scheme MyUnityProject \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     -archivePath ../MyUnityProject.xcarchive
+
       - name: Export IPA
         run: |
-          xcodebuild -exportArchive -archivePath MyUnityProject.xcarchive -exportPath MyUnityProject.ipa -exportOptionsPlist exportOptions.plist
+          cd xcprojects
+          xcodebuild -exportArchive \
+                     -archivePath ../MyUnityProject.xcarchive \
+                     -exportPath ../MyUnityProject.ipa \
+                     -exportOptionsPlist exportOptions.plist
+
       - name: Commit IPA
         run: |
-          git add MyUnityProject.ipa
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
+          git add ../MyUnityProject.ipa
           git commit -m "Built IPA"
           git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure the token is set in your repo secrets
