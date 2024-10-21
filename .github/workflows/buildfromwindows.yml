@@ -8,45 +8,28 @@ jobs:
   build:
     runs-on: macOS-latest
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Install Unity
         uses: actions/setup-unity@v1
         with:
-          unity-version: '2022.3.47f1'  # Use the desired Unity version
-          activate: true                 # Activate Unity license
-
+          unity-version: 2022.3.47f1
       - name: Build Unity Project for iOS
         run: |
           cd UnityProject
-          /Applications/Unity/Hub/Editor/2022.3.47f1/Unity.app/Contents/MacOS/Unity \
-            -batchmode -quit -projectPath . \
-            -executeMethod BuildScript.PerformBuild  # Ensure your build method matches this
-
+          ./Unity -batchmode -quit -projectPath . -executeMethod Build -buildTarget iOS -buildName MyUnityProject
       - name: Build Xcode Project
         run: |
-          cd xcprojects
-          xcodebuild -project Unity-iOS.xcodeproj \
-                     -scheme MyUnityProject \
-                     -configuration Release \
-                     -sdk iphoneos \
-                     -archivePath ../MyUnityProject.xcarchive
-
+          cd Unity-iPhone  # Assuming Xcode project is in Unity-iPhone folder
+          xcodebuild -project Unity-iPhone.xcodeproj -scheme MyUnityProject -configuration Release -sdk iphoneos -archivePath MyUnityProject.xcarchive -clean archive
       - name: Export IPA
         run: |
-          cd xcprojects
-          xcodebuild -exportArchive \
-                     -archivePath ../MyUnityProject.xcarchive \
-                     -exportPath ../MyUnityProject.ipa \
-                     -exportOptionsPlist exportOptions.plist
-
-      - name: Commit IPA
+          xcodebuild -exportArchive -archivePath MyUnityProject.xcarchive -exportPath MyUnityProject.ipa -exportOptionsPlist exportOptions.plist
+      - name: Commit IPA (Optional)
+        # Uncomment if you want to commit the IPA
+        if: ${{ secrets.COMMIT_IPA }} == 'true'
         run: |
           git config --local user.name "GitHub Action"
           git config --local user.email "action@github.com"
-          git add ../MyUnityProject.ipa
+          git add MyUnityProject.ipa
           git commit -m "Built IPA"
           git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure the token is set in your repo secrets
