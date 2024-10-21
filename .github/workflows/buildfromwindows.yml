@@ -10,9 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Unity
-        uses: actions/setup-unity@v1
+        uses: game-ci/unity-actions@v4
         with:
-          unity-version: 2022.3.47f1
+          unity-version: 2023.1.0f1  # Replace with your desired Unity version
       - name: Build Unity Project for iOS
         run: |
           cd UnityProject
