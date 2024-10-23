@@ -1,33 +1,40 @@
-name: Build Unity Project for iOS
+name: Build Unity-iPhone Project
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
 
 jobs:
   build:
     runs-on: macOS-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Unity
-        uses: game-ci/unity-actions@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Xcode
+        uses: maxim-lobanov/setup-xcode@v1
         with:
-          unity-version: 2023.1.0f1  # Replace with your desired Unity version
-      - name: Build Unity Project for iOS
+          xcode-version: latest-stable
+
+      - name: Build Unity-iPhone project
         run: |
-          cd UnityProject
-          ./Unity -batchmode -quit -projectPath . -executeMethod Build -buildTarget iOS -buildName MyUnityProject
-      - name: Build Xcode Project
-        run: |
-          cd Unity-iPhone  # Assuming Xcode project is in Unity-iPhone folder
-          xcodebuild -project Unity-iPhone.xcodeproj -scheme MyUnityProject -configuration Release -sdk iphoneos -archivePath MyUnityProject.xcarchive -clean archive
+          xcodebuild -project xcprojects/Unity-iPhone.xcodeproj -configuration Release -scheme Unity-iPhone -archivePath "Unity-iPhone.xcarchive"
+
+      - name: Upload xcarchive as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Unity-iPhone.xcarchive
+          path: Unity-iPhone.xcarchive
+
       - name: Export IPA
         run: |
-          xcodebuild -exportArchive -archivePath MyUnityProject.xcarchive -exportPath MyUnityProject.ipa -exportOptionsPlist exportOptions.plist
-      - name: Commit IPA (Optional)
-        run: |
-          git config --local user.name "GitHub Action"
-          git config --local user.email "action@github.com"
-          git add MyUnityProject.ipa
-          git commit -m "Built IPA"
-          git push origin main
+          xcodebuild -exportArchive -archivePath "Unity-iPhone.xcarchive" -exportPath "Unity-iPhone.ipa"
+
+      - name: Upload IPA as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Unity-iPhone.ipa
+          path: Unity-iPhone.ipa
