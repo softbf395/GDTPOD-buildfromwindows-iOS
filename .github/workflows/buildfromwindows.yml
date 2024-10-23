@@ -31,7 +31,7 @@ jobs:
 
       - name: Export IPA
         run: |
-          xcodebuild -exportArchive -archivePath "Unity-iPhone.xcarchive" -exportPath "Unity-iPhone.ipa" -exportOptionsPlist "exportOptions.plist" -allowProvisioningProfileUpdates
+          xcodebuild -exportArchive -archivePath "Unity-iPhone.xcarchive" -exportPath "Unity-iPhone.ipa" -exportOptionsPlist "exportOptions.plist"
 
       - name: Upload IPA as artifact
         uses: actions/upload-artifact@v3
