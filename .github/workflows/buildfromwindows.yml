@@ -21,7 +21,7 @@ jobs:
 
       - name: Build Unity-iPhone project
         run: |
-          xcodebuild -project xcprojects/Unity-iPhone.xcodeproj -configuration Release -scheme Unity-iPhone -archivePath "Unity-iPhone.xcarchive"
+          xcodebuild -project xcprojects/Unity-iPhone.xcodeproj -configuration Release -scheme Unity-iPhone -archivePath "Unity-iPhone.xcarchive" -allowProvisioningProfileUpdates
 
       - name: Upload xcarchive as artifact
         uses: actions/upload-artifact@v3
@@ -31,7 +31,7 @@ jobs:
 
       - name: Export IPA
         run: |
-          xcodebuild -exportArchive -archivePath "Unity-iPhone.xcarchive" -exportPath "Unity-iPhone.ipa"
+          xcodebuild -exportArchive -archivePath "Unity-iPhone.xcarchive" -exportPath "Unity-iPhone.ipa" -exportOptionsPlist "exportOptions.plist" -allowProvisioningProfileUpdates
 
       - name: Upload IPA as artifact
         uses: actions/upload-artifact@v3
