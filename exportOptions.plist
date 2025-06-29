@@ -3,8 +3,20 @@
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>ad-hoc</string>
-    <key>packageType</key>
-    <string>ipa</string>
+    <string>development</string> <!-- Or 'none' if your Xcode version supports it more directly for unsigned -->
+    <key>compileBitcode</key>
+    <false/>
+    <key>stripSwiftSymbols</key>
+    <false/>
+    <key>uploadSymbols</key>
+    <false/>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <!-- If you have any dummy profile, you might list it here, otherwise omit or use an empty dict -->
+    </dict>
+    <key>signingCertificate</key>
+    <string></string> <!-- Leave empty to force unsigned behavior if possible -->
 </dict>
 </plist>
