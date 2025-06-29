@@ -20,12 +20,6 @@ jobs:
         run: |
           xcodebuild -project xcprojects/Unity-iPhone.xcodeproj -configuration Release -scheme Unity-iPhone -archivePath "Unity-iPhone.xcarchive" -allowProvisioningProfileUpdates
 
-      - name: Upload xcarchive as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: Unity-iPhone.xcarchive
-          path: Unity-iPhone.xcarchive
-
       - name: Export IPA
         run: |
           xcodebuild -exportArchive -archivePath "Unity-iPhone.xcarchive" -exportPath "Unity-iPhone.ipa" -exportOptionsPlist "exportOptions.plist"
