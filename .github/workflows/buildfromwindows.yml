@@ -18,10 +18,14 @@ jobs:
 
       - name: Build Unity-iPhone project
         run: |
-          xcodebuild -project xcprojects/Unity-iPhone.xcodeproj -configuration Release -scheme Unity-iPhone -archivePath "Unity-iPhone.xcarchive" -allowProvisioningProfileUpdates
+          # Corrected flag: -allowProvisioningUpdates
+          xcodebuild -project xcprojects/Unity-iPhone.xcodeproj -configuration Release -scheme Unity-iPhone -archivePath "Unity-iPhone.xcarchive" -allowProvisioningUpdates
 
       - name: Export IPA
         run: |
+          # This step relies on 'exportOptions.plist' to determine if it's signed or unsigned.
+          # If you don't have a dev account and want an unsigned IPA, ensure your exportOptions.plist
+          # has 'method: none' or 'development' with other keys to suppress signing.
           xcodebuild -exportArchive -archivePath "Unity-iPhone.xcarchive" -exportPath "Unity-iPhone.ipa" -exportOptionsPlist "exportOptions.plist"
 
       - name: Upload IPA as artifact
