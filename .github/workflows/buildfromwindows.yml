@@ -31,7 +31,7 @@ jobs:
           xcodebuild -exportArchive -archivePath "Unity-iPhone.xcarchive" -exportPath "Unity-iPhone.ipa" -exportOptionsPlist "exportOptions.plist"
 
       - name: Upload IPA as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Unity-iPhone.ipa
           path: Unity-iPhone.ipa
